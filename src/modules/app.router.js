@@ -1,13 +1,14 @@
 
-
+import cors from 'cors'
 import categoryRouter from './category/category.router.js';
 import productRouter from './product/product.router.js';
 import connectDB from '../../DB/connection.js';
-import { globalErrorHandler } from '../services/errorHandling.js';
+import { globalErrorHandler } from '../utls/errorHandling.js';
 
 
  const initApp=(app,express)=>{
   connectDB();
+  app.use(cors());
  app.use(express.json());
  app.get('/',(req,res)=>{
     return res.status(200).json({message:"welcome"});
