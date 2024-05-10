@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
   const info = await transporter.sendMail({
-    from: `"Top-Tools" <${process.env.EMAILSENDER}>`, // sender address
+    from: `"B-Shop" <${process.env.EMAILSENDER}>`, // sender address
     to, // list of receivers
     subject, // Subject line
     html, // html body

@@ -3,6 +3,7 @@ import cors from 'cors'
 import categoryRouter from './category/category.router.js';
 import productRouter from './product/product.router.js';
 import authRouter from './auth/auth.router.js';
+import subcategoryRouter from './subcategory/subcategory.router.js';
 import connectDB from '../../DB/connection.js';
 import { globalErrorHandler } from '../utls/errorHandling.js';
 
@@ -19,7 +20,7 @@ import { globalErrorHandler } from '../utls/errorHandling.js';
 app.use('/categories',categoryRouter);
 app.use('/auth',authRouter)
 app.use('/products',productRouter);
-
+app.use('/subcategory',subcategoryRouter)
 app.use('*',(req,res)=>{
     return res.status(404).json({message:"page not found"});
  })
