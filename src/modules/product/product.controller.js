@@ -3,9 +3,7 @@ import categoryModel from "../../../DB/model/category.model.js";
 import productModel from "../../../DB/model/product.model.js";
 import subcategoryModel from "../../../DB/model/subcategory.model.js";
 import cloudinary from "../../utls/cloudinary.js";
-export const getproduct=async(req,res)=>{
-    return res.json({message:"success"})
-}
+
 export const createProduct = async (req,res)=>{
     const {name,price,discount,categoryId,subcategoryId} = req.body;
     const checkCategory = await categoryModel.findById(categoryId);
@@ -38,4 +36,14 @@ export const createProduct = async (req,res)=>{
         return res.status(400).json({message:"error while creating product"});
     }
     return res.status(201).json({message:"success",product});
+}
+export const getproduct=async(req,res)=>{
+const product =await productModel.find({}).populate({
+    path:'reviews',
+    populate:{
+        path:'userId',
+        select:'userName -_id'
+    },
+});
+return res.status(200).json({message:"success",product})
 }

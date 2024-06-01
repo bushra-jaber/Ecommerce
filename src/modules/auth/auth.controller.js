@@ -281,7 +281,7 @@ export const signIn = async(req,res,next)=>{
   }
 
   const token = jwt.sign({id:user._id,role:user.role,status:user.status},process.env.LOGINSECRET
-      ,{expiresIn:'30m'}
+      ,{expiresIn:'1h'}
       );
 
   const refreshToken = jwt.sign({id:user._id,role:user.role,status:user.status},process.env.LOGINSECRET,

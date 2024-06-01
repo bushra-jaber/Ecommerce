@@ -3,7 +3,7 @@ import cartModel from "../../../DB/model/cart.model.js";
 
 export const getCart=async(req,res)=>{
     const cart = await cartModel.findOne({userId:req.user._id});
-    return res.json({message:"success",cart});
+    return res.json({message:"success",products:cart.products});
 }
 export const createCart=async(req,res)=>{
     const {productId}=req.body;

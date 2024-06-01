@@ -63,7 +63,13 @@ const productSchema = new Schema({
 },
 {
     timestamps:true,
-}
-);
+    toJSON:{virtuals:true},
+    toObject:{virtuals:true},
+});
+productSchema.virtual('reviews',{
+    localField:'_id',
+    foreignField:'productId',
+    ref:'Review'
+})
 const productModel = mongoose.models.Product ||  model('Product',productSchema);
 export default productModel;
