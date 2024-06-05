@@ -1,4 +1,4 @@
-export const emailTemplet=(userName,token)=>{
+export const emailTemplet=(email,userName,token)=>{
    return `
     <!DOCTYPE html>
     <html>

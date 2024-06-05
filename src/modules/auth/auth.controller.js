@@ -28,21 +28,14 @@ await sendEmail(email, `welcome`,userName,token)
 return res.status(201).json({ message: "success",user:createUser });
 
 }
-export const confirmEmail = async(req,res,next)=>{
+export const confirmEmail = async (req, res, next) => {
   const token = req.params.token;
   const decoded = jwt.verify(token,process.env.CONFIRMEMAILSECRET);
-  if(!decoded){
-    return next(new AppError(`invalid token`,404));
-      
-  }
-  const user =await  userModel.findOneAndUpdate({email:decoded.email,confirmEmail:false},
-      {confirmEmail:true});
-      if(!user){
-        return next(new AppError(`invalid verify your email or your email is verified`,400));
-         
-        }
-        
-   return res.redirect(process.env.FRONTENDURL)
+ await userModel.findOneAndUpdate({email:decoded.email},{confirmEmail: true }
+    );
+ return res.json({message:"success"})
+
+
 }
 export const signIn = async(req,res,next)=>{
   const {email,password} = req.body;
