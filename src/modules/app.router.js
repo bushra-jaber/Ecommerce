@@ -10,7 +10,7 @@ import couponRouter from './coupon/coupon.router.js';
 import cartRouter from './cart/cart.router.js';
 import orderRouter from './order/order.router.js';
 import connectDB from '../../DB/connection.js';
-import { globalErrorHandler } from '../utls/errorHandling.js';
+
 
 
  const initApp=(app,express)=>{
@@ -34,6 +34,8 @@ app.use('/review',reviewRouter);
 app.use('*',(req,res)=>{
     return res.status(404).json({message:"page not found"});
  })
- app.use(globalErrorHandler);
+ app.use((err,req,res,next)=>{
+   res.status(err.statusCode).json({message:err.message});
+});
 }
 export default initApp;

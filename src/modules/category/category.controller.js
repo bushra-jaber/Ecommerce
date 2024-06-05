@@ -2,12 +2,14 @@ import slugify from "slugify";
 import categoryModel from "../../../DB/model/category.model.js";
 import cloudinary from "../../utls/cloudinary.js";
 import { pagination } from "../../utls/pagination.js";
+import { AppError } from "../../utls/AppError.js";
 
 
 export const createCategories = async (req, res, next) => {
     const name = req.body.name.toLowerCase();
     if (await categoryModel.findOne({ name })) {
-        return next(new Error(`category name already exists`, { cause: 409 }));
+        
+        return next(new AppError(`category name already exists`, 409 ));
     }
     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path,
         { folder: `${process.env.APP_NAME}/categories` });
@@ -33,18 +35,19 @@ export const getActiveCategories = async (req, res) => {
 export const getDetailsCategories = async (req, res,next) => {
     const category = await categoryModel.findById(req.params.id);
     if(!category){
-    return next(new Error(`category not found`, { cause: 404 }));
+    return next(new AppError(`category not found`,  404 ));
     }
     return res.status(200).json({ message: "success", category });
 }
 export const updateCategories=async(req,res,next)=>{
      const category=await categoryModel.findById(req.params.id);
      if(!category){
-        return res.status(404).json({ message: `invalid category id ${req.params.id}` });
+        return next(new AppError(`invalid category id ${req.params.id}`,  404 ));
+      
      }
     category.name = req.body.name.toLowerCase();
     if(await categoryModel.findOne({name:req.body.name,_id:{$ne:req.params.id}})){
-        return next(new Error(`category ${req.body.name} already exists`, { cause: 409 }),
+        return next(new AppError(`category ${req.body.name} already exists`,  409 ),
           );
     }
     category.slug = slugify(req.body.name);
@@ -63,7 +66,7 @@ await category.save();
 export const deleteCategories=async(req,res,next)=>{
     const category=await categoryModel.findByIdAndDelete(req.params.id);
     if(!category){
-     return next(new Error(`categroy not found`, { cause: 404 }));
+     return next(new AppError(`categroy not found`, 404 ));
     }
     await cloudinary.uploader.destroy(category.image.public_id);
   return res.status(200).json({ message: 'success' });

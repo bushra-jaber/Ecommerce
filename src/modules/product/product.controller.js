@@ -3,18 +3,23 @@ import categoryModel from "../../../DB/model/category.model.js";
 import productModel from "../../../DB/model/product.model.js";
 import subcategoryModel from "../../../DB/model/subcategory.model.js";
 import cloudinary from "../../utls/cloudinary.js";
+import { pagination } from "../../utls/pagination.js";
+import { json } from "express";
+import { AppError } from "../../utls/AppError.js";
 
-export const createProduct = async (req,res)=>{
+export const createProduct = async (req,res,next)=>{
     const {name,price,discount,categoryId,subcategoryId} = req.body;
     const checkCategory = await categoryModel.findById(categoryId);
     if(!checkCategory) {
-        return res.status(404).json({message:"category not found"});
+        return next(new AppError(`category not found`,404));
+        
     }
     const checkSubCategory = await subcategoryModel.findById(subcategoryId);
     if(req.body.subcategoryId){
 
         if(!checkSubCategory) {
-            return res.status(404).json({message:"sub category not found"});
+            return next(new AppError(`subcategory not found`,404));
+           
         }
     }
     
@@ -33,17 +38,39 @@ export const createProduct = async (req,res)=>{
     req.body.updatedBy= req.user._id;
     const product =await productModel.create(req.body);
     if(!product){
-        return res.status(400).json({message:"error while creating product"});
+        return next(new AppError(`error while creating product`,400));
+       
     }
     return res.status(201).json({message:"success",product});
 }
 export const getproduct=async(req,res)=>{
-const product =await productModel.find({}).populate({
+    const {skip,limit}=pagination(req.query.page,req.query.limit);
+    let queryObj={...req.query};
+    const execQuery=['page','limit','sort','search','fields'];
+    execQuery.map((ele)=>{
+        delete queryObj[ele];
+    });
+    queryObj = JSON.stringify(queryObj);
+    queryObj=queryObj.replace(/gt|gte|lt|lte|in|nin|eq/g,match=>`$${match}`);
+   queryObj=JSON.parse(queryObj);
+const moongoseQuery = productModel.find(queryObj).skip(skip).limit(limit).populate({
     path:'reviews',
     populate:{
         path:'userId',
         select:'userName -_id'
     },
 });
-return res.status(200).json({message:"success",product})
+if(req.query.search){
+    moongoseQuery.find({
+        $or:[
+            {name:{$regex:req.query.search}},
+            {description:{$regex:req.query.search}}
+        ]
+    });
+}
+
+const count=await productModel.estimatedDocumentCount();
+moongoseQuery.select(req.query.fields)
+const products=await  moongoseQuery.sort(req.query.sort).select('name price discount');
+return res.status(200).json({message:"success",count,products})
 }

@@ -8,7 +8,7 @@ export function pagination(page,limit){
         limit = 4;
     }
 
-    const skip =(page - 1) * limit;
+    const skip =(parseInt(page) - 1) * parseInt(limit) ;
 
     return {skip,limit};
 }

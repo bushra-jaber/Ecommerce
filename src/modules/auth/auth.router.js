@@ -3,13 +3,12 @@ import * as AuthController from './auth.controller.js';
 import { asyncHandler } from '../../utls/errorHandling.js';
 import fileUpload, { fileValidation } from '../../utls/multer.js';
 import { auth } from '../../middleware/auth.js';
-
-
+import { checkEmail } from '../../middleware/checkEmail.js';
 
 const router = Router();
 router.get('/getUser',auth(['User']), AuthController.getUsers);
-router.post('/signup',fileUpload(fileValidation.image).single('image'),
-asyncHandler(AuthController.signUp));
+router.post('/signup',fileUpload(fileValidation.image).single('image'),checkEmail
+,asyncHandler(AuthController.signUp));
 router.get('/confirmEmail/:token',asyncHandler(AuthController.confirmEmail))
 router.post('/signin',asyncHandler(AuthController.signIn));
 router.patch('/sendCode',asyncHandler(AuthController.sendCode));

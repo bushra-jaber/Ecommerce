@@ -3,6 +3,7 @@ import couponModel from "../../../DB/model/coupn.model.js"
 import orderModel from "../../../DB/model/order.model.js";
 import productModel from "../../../DB/model/product.model.js";
 import userModel from "../../../DB/model/user.model.js";
+import { AppError } from "../../utls/AppError.js";
 
 export const createOrder = async(req,res,next)=>{
 
@@ -10,21 +11,21 @@ export const createOrder = async(req,res,next)=>{
    const {couponName} = req.body;
    const cart = await cartModel.findOne({userId:req.user._id});
    if(!cart || cart.products.length===0){
-       return next(new Error(`cart is empty`,{cause:400}));
+       return next(new AppError(`cart is empty`,400));
    }
    req.body.products = cart.products;
    //check coupon
    if(couponName){
        const coupon = await couponModel.findOne({name:couponName});
        if(!coupon){
-           return next(new Error(`coupon not found`,{cause:404}));
+           return next(new AppError(`coupon not found`,404));
        }
       const currentDate = new Date();
       if(coupon.expireDate <= currentDate){
-       return next(new Error(`this coupon has expried`,{cause:400}));
+       return next(new AppError(`this coupon has expried`,400));
       }
       if(coupon.usedBy.includes(req.user._id)){
-       return next(new Error(`coupon already used`,{cause:409}));
+       return next(new AppError(`coupon already used`,409));
       }
      req.body.coupon = coupon;
 
@@ -40,7 +41,7 @@ export const createOrder = async(req,res,next)=>{
    })
 
    if(!checkProduct){
-       return next(new Error(`product quantity not available`));
+       return next(new AppError(`product quantity not available`,400));
    }
    product = product.toObject();
    product.name = checkProduct.name;
@@ -100,12 +101,13 @@ export const getOrderUser =async(req,res)=>{
     const order= await orderModel.find({userId:req.user._id});
     return res.json({message:"success",order})
 }
-export const changeStatus=async(req,res)=>{
+export const changeStatus=async(req,res,next)=>{
     const {orderId}=req.params;
     const {status}=req.body;
     const order= await orderModel.findById(orderId);
     if(!order){
-        return res.json({message:"order not found"});
+        return next(new AppError(`order not found`,404));
+        
     }
      order.status=status;
      await order.save();

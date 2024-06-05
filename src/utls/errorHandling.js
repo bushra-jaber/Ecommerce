@@ -1,11 +1,13 @@
-export const asyncHandler = (fn)=>{
-    return (req,res,next)=>{
-        fn(req,res,next).catch(error=>{
-            return next(new Error(error.stack))
-        })
-    }
-}
-export const globalErrorHandler =(err,req,res,next)=>{
+import { AppError } from "./AppError.js"
 
-    return res.status(err.cause || 500).json({message:err.message});
+export const asyncHandler = (fn)=>{
+    return async(req,res,next)=>{
+        try{
+            return await fn(req,res,next)
+        }
+        catch(error){
+           return next(new AppError(error.stack,500))
+        }
+       
+    }
 }
