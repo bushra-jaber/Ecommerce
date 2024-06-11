@@ -10,7 +10,7 @@ export const generalFields = {
       'string.empty':"password is required",
   }),
   file:joi.object({
-    size:joi.number().positive().required(),
+    size:joi.number().max(50000000).required(),
     path:joi.string().required(),
     filename:joi.string().required(),
     destination:joi.string().required(),
@@ -25,14 +25,25 @@ export const generalFields = {
 
 export const validation = (schema)=>{
     return (req,res,next)=>{
-        const inputsData = {...req.body,...req.params,...req.query};
-        if(req.file || req.files){
-            inputsData.file = req.file || req.files;
+        const errorMessage=[];
+        let filterData={};
+        if(req.file){
+            filterData={mainImage:req.file,...req.body,...req.params,...req.query}
+        }else if(req.files){
+          filterData={...req.files,...req.body,...req.params,...req.query}
+        }else{
+            filterData={...req.body,...req.params,...req.query}
         }
-        const validationResult = schema.validate(inputsData,{abortEarly:false});
-        if(validationResult.error?.details){
+       
+        const {error} = schema.validate(filterData,{abortEarly:false});
+        if(error){
+            error.details.forEach(err=>{
+             const key=err.context.key;
+             errorMessage.push({[key]:err.message});
+            })
+            
             return res.status(400).json({message:"validation error",
-        validationError:validationResult.error?.details})
+      errors:errorMessage})
         }
         next();       
     }

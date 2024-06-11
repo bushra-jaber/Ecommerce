@@ -4,7 +4,7 @@ import productModel from "../../../DB/model/product.model.js";
 import subcategoryModel from "../../../DB/model/subcategory.model.js";
 import cloudinary from "../../utls/cloudinary.js";
 import { pagination } from "../../utls/pagination.js";
-import { json } from "express";
+
 import { AppError } from "../../utls/AppError.js";
 
 export const createProduct = async (req,res,next)=>{
@@ -71,6 +71,17 @@ if(req.query.search){
 
 const count=await productModel.estimatedDocumentCount();
 moongoseQuery.select(req.query.fields)
-const products=await  moongoseQuery.sort(req.query.sort).select('name price discount');
+let products=await  moongoseQuery.sort(req.query.sort);
+
+products=products.map(product=>{
+  
+    return{
+        ...product.toObject(),
+        mainImage: product.mainImage ? product.mainImage.secure_url : null,
+        subImages: product.subImages ? product.subImages.map(img => img.secure_url) : []
+    }
+})
+
+
 return res.status(200).json({message:"success",count,products})
 }

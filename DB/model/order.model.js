@@ -8,12 +8,13 @@ const orderSchema = new Schema({
         productId:{type:Types.ObjectId,ref:'Product',required:true},
         quantity:{type:Number,default:1,required:true},
         unitPrice:{type:Number,required:true},
-        finalPrice:{type:Number,required:true}
+        finalPrice:{type:Number,required:true},
+        productName:{type:String}
     }],
     finalPrice:{
         type:Number,required:true
     },
-    address:{type:String,required:true},
+    Address:{type:String,required:true},
     phoneNumber:{type:String,required:true},
    
     paymentType:{

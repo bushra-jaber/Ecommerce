@@ -45,7 +45,7 @@ export const getAllSubCategories = async (req, res ,next) => {
     return res.status(200).json({ message: "success", count: subcategory.length, subcategory });
 }
 export const getActivesubCategory = async (req, res, next) => {
-    const categoryId = req.params;
+    const {categoryId} = req.params;
     const { skip, limit } = pagination(req.query.page, req.query.limit);
     const subcategory = await subcategoryModel.find({ categoryId, status: 'Active' }).skip(skip)
         .limit(limit).select('name image');
