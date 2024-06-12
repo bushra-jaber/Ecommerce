@@ -1,10 +1,11 @@
 import 'dotenv/config'
 import express from 'express';
 import initApp from './src/modules/app.router.js';
-const app = express();
-const PORT = process.env.PORT || 4000;
 import Stripe from 'stripe';
 const stripe = new Stripe(process.env.sekStrip);
+const app = express();
+const PORT = process.env.PORT || 4000;
+
 
 
 app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
