@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.sekStrip);
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-
+const signitureStrip="whsec_CXLXHcvDyKHnQmpYv4J1fy5wQ0Fyrqw2";
 
 app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
   const sig = request.headers['stripe-signature'];
@@ -14,12 +14,12 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(request.body, sig,process.env.signitureStrip);
+    event = stripe.webhooks.constructEvent(request.body, sig,signitureStrip);
   } catch (err) {
   return  response.status(400).send(`Webhook Error: ${err.message}`);
     
   }
-   if(event.type=='checkout.session.completed'){
+   if(event.type == 'checkout.session.completed'){
       console.log("create order ....");
     const checkoutSessionCompleted = event.data.object;
    }else{
