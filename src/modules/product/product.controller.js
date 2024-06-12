@@ -77,8 +77,8 @@ products=products.map(product=>{
   
     return{
         ...product.toObject(),
-        mainImage: product.mainImage ? product.mainImage.secure_url : null,
-        subImages: product.subImages ? product.subImages.map(img => img.secure_url) : []
+        mainImage: product.mainImage.secure_url ,
+        subImages: product.subImages.map(img => img.secure_url) 
     }
 })
 

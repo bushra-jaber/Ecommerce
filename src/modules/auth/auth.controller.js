@@ -15,11 +15,9 @@ export const signUp = async(req,res,next)=>{
 
   const {userName,email,password} = req.body;
   const hashedPassword=await bcrypt.hash(password,parseInt(process.env.SALT_ROUND));
-  const {secure_url,public_id}= await cloudinary.uploader.upload(req.file.path,{
-      folder:`${process.env.APP_NAME}/users`
-   })
+  
 const token= jwt.sign({email},process.env.CONFIRMEMAILSECRET);
-const createUser = await userModel.create({ userName, email, password: hashedPassword,image:{secure_url,public_id} });
+const createUser = await userModel.create({ userName, email, password: hashedPassword });
 if (!createUser) {
   return next(new AppError(`error while creat user`,400));
   

@@ -4,15 +4,10 @@ export const RegisterSchema = joi.object({
     userName: joi.string().pattern(new RegExp('^[a-zA-Z0-9\u0621-\u064A\u0660-\u0669]+$')).min(3).max(20).required().messages({
         "string.empty": "userName is required",
     }
-    ),
-    email: generalFields.email,
-    password: generalFields.password,
+    ).required(),
+    email: generalFields.email.required(),
+    password: generalFields.password.required(),
     checkPassword: joi.valid(joi.ref('password')).required(),
-   
-
-
-
-    
 
 });
 export const LogInSchema = joi.object({

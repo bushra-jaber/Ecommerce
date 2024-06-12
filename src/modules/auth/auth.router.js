@@ -8,7 +8,7 @@ import { validation } from '../../middleware/validation.js';
 import * as validators from './auth.validation.js';
 const router = Router();
 router.get('/getUser',auth(['User']), AuthController.getUsers);
-router.post('/signup',fileUpload(fileValidation.image).single('image'),checkEmail
+router.post('/signup',checkEmail
 ,validation(validators.RegisterSchema),asyncHandler(AuthController.signUp));
 router.get('/confirmEmail/:token',asyncHandler(AuthController.confirmEmail))
 router.post('/signin',validation(validators.LogInSchema),asyncHandler(AuthController.signIn));
