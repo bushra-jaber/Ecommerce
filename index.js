@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.sekStrip);
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-const signStrip="whsec_ozQllAeN3L39LQYsnf6eOGSCwUlwBCXJ";
+const signStrip="whsec_eHQRtdFbHSCKY6DzK1sEHOoMSg1iOzsj";
 
 app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
   const sig = request.headers['stripe-signature'];
