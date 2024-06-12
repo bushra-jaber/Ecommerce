@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.sekStrip);
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-const signitureStrip="whsec_ozQllAeN3L39LQYsnf6eOGSCwUlwBCXJ";
+const signStrip="whsec_ozQllAeN3L39LQYsnf6eOGSCwUlwBCXJ";
 
 app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
   const sig = request.headers['stripe-signature'];
@@ -14,7 +14,7 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(request.body, sig,signitureStrip);
+    event = stripe.webhooks.constructEvent(request.body, sig,signStrip);
   } catch (err) {
   return  response.status(400).send(`Webhook Error: ${err.message}`);
     
