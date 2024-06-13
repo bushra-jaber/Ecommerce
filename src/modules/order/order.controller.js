@@ -4,8 +4,11 @@ import orderModel from "../../../DB/model/order.model.js";
 import productModel from "../../../DB/model/product.model.js";
 import userModel from "../../../DB/model/user.model.js";
 import { AppError } from "../../utls/AppError.js";
+
 import Stripe from 'stripe';
+import createInvoice from "../../utls/pdf.js";
 const stripe = new Stripe(process.env.sekStrip);
+
 export const createOrder = async(req,res,next)=>{
 
    //check carts 
@@ -62,7 +65,7 @@ export const createOrder = async(req,res,next)=>{
   if(!req.body.phoneNumber){
    req.body.phoneNumber = user.phoneNumber;
   }
-
+/*
   const session = await stripe.checkout.sessions.create({
     line_items: [
         {
@@ -82,7 +85,7 @@ export const createOrder = async(req,res,next)=>{
       cancel_url: `http://www.youtub.com`,
   })
   return res.json(session)
-  
+  */
   const order = await orderModel.create({
    userId:req.user._id,
    products:finalProductList,
@@ -91,8 +94,24 @@ export const createOrder = async(req,res,next)=>{
    phoneNumber:req.body.phoneNumber,
   
   });
+       if(order){
+        
 
-  for(const product of req.body.products){
+        const invoice = {
+          shipping: {
+            name: user.userName,
+            address: order.Address,
+            phone:order.phoneNumber
+          },
+          items: order.products,
+          subtotal: order.finalPrice,
+         
+          invoice_nr: order._id
+        };
+        
+        createInvoice(invoice, "invoice.pdf");
+
+    for(const product of req.body.products){
    await productModel.updateOne({_id:product.productId},{$inc:{stock:- product.quantity}})
   }
 
@@ -103,6 +122,8 @@ export const createOrder = async(req,res,next)=>{
   await cartModel.updateOne({userId:req.user._id},{
    products:[],
   })
+
+       }
 
   return res.status(201).json({message:"success",order});
 

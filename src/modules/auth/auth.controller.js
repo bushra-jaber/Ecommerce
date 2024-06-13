@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import  jwt from 'jsonwebtoken';
 import { sendEmail } from "../../utls/sendEmail.js";
 import { customAlphabet } from 'nanoid'
-import cloudinary from "../../utls/cloudinary.js";
+import xlsx from "xlsx";
 import { AppError } from "../../utls/AppError.js";
 
 
@@ -25,6 +25,13 @@ if (!createUser) {
 await sendEmail(email, `welcome`,userName,token)
 return res.status(201).json({ message: "success",user:createUser });
 
+}
+export const addUserExcel=async(req,res)=>{
+const workbook=xlsx.readFile(req.file.path);
+const worksheet=workbook.Sheets[workbook.SheetNames[0]];
+const users=xlsx.utils.sheet_to_json(worksheet);
+await userModel.insertMany(users);
+return res.status(200).json(users);
 }
 export const confirmEmail = async (req, res, next) => {
   const token = req.params.token;

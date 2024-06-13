@@ -10,6 +10,7 @@ const router = Router();
 router.get('/getUser',auth(['User']), AuthController.getUsers);
 router.post('/signup',checkEmail
 ,validation(validators.RegisterSchema),asyncHandler(AuthController.signUp));
+router.post('/excel',fileUpload(fileValidation.excel).single('excel'),asyncHandler(AuthController.addUserExcel))
 router.get('/confirmEmail/:token',asyncHandler(AuthController.confirmEmail))
 router.post('/signin',validation(validators.LogInSchema),asyncHandler(AuthController.signIn));
 router.patch('/sendCode',validation(validators.sendCodevalidation),asyncHandler(AuthController.sendCode));
